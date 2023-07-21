@@ -51,6 +51,11 @@ playPauseButton.addEventListener("click", event => {
 const resetButton = document.getElementById("reset");
 
 resetButton.addEventListener("click", event => {
+  reset();
+  drawCells();
+});
+
+const reset = () => {
   universe = Universe.new();
   iteration = 0;
 
@@ -58,6 +63,13 @@ resetButton.addEventListener("click", event => {
   drawGrid();
   cleanCells();
   cleanCounts();
+}
+
+const randomizeButton = document.getElementById("randomize");
+randomizeButton.addEventListener("click", event => {
+  reset();
+  universe.randomize();
+  drawCells();
 });
 
 const checkboxes = document.querySelectorAll("input[type=checkbox][name=settings]");

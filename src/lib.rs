@@ -1,8 +1,10 @@
 mod utils;
 
 extern crate fixedbitset;
+extern crate rand;
 
 use fixedbitset::FixedBitSet;
+use rand::prelude::*;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -64,6 +66,14 @@ impl Universe {
 
             carry_over = self.cells[j];
             self.cells.set(j, outcome);
+        }
+    }
+
+    pub fn randomize(&mut self) {
+        let width = (2 * self.span + 1) as usize;
+
+        for i in 0..width {
+            self.cells.set(i, random());
         }
     }
 }
