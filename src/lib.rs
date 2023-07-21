@@ -61,8 +61,9 @@ impl Universe {
 
         for j in 0..width {
             let k = if j == width - 1 { start } else { self.cells[j + 1] };
+            let bits = [carry_over, self.cells[j], k];
 
-            let outcome = pattern.outcome(carry_over, self.cells[j], k);
+            let outcome = pattern.outcome(&bits).unwrap();
 
             carry_over = self.cells[j];
             self.cells.set(j, outcome);
@@ -78,41 +79,40 @@ impl Universe {
     }
 }
 
+#[derive(Clone, Debug)]
+struct LengthError;
+
 #[wasm_bindgen]
 pub struct Pattern {
+    r: u32,
     outcomes: FixedBitSet,
 }
 
 #[wasm_bindgen]
 impl Pattern {
-    pub fn new() -> Pattern {
-        let mut outcomes = FixedBitSet::with_capacity(8);
+    pub fn new(r: u32) -> Pattern {
+        let combinations = (2 as usize).pow(r);
+        let mut outcomes = FixedBitSet::with_capacity(combinations);
 
         outcomes.set(0, false);
-        outcomes.set(1, true);
-        outcomes.set(2, true);
-        outcomes.set(3, true);
-        outcomes.set(4, true);
-        outcomes.set(5, true);
-        outcomes.set(6, true);
-        outcomes.set(7, true);
+        for i in 1..combinations {
+            outcomes.set(i, true);
+        }
 
         Pattern {
+            r,
             outcomes,
         }
     }
 
-    pub fn outcome(&self, i: bool, j: bool, k: bool) -> bool {
-        match(i, j, k) {
-            (false, false, false) => self.outcomes[0],
-            (false, false,  true) => self.outcomes[1],
-            (false,  true, false) => self.outcomes[2],
-            (false,  true,  true) => self.outcomes[3],
-            ( true, false, false) => self.outcomes[4],
-            ( true, false,  true) => self.outcomes[5],
-            ( true,  true, false) => self.outcomes[6],
-            ( true,  true,  true) => self.outcomes[7],
+    fn outcome(&self, b: &[bool]) -> Result<bool, LengthError> {
+        if b.len() != self.r as usize {
+            return Err(LengthError);
         }
+
+        let index = b.iter().enumerate().map(|(i, &val)| (val as usize) << i).sum();
+
+        Ok(self.outcomes[index])
     }
 
     pub fn set_outcome(&mut self, index: usize, outcome: bool) {

@@ -14,7 +14,7 @@ const width = 2 * span + 1;
 const iteration_limit = span;
 let iteration = 0;
 
-const pattern = Pattern.new();
+const pattern = Pattern.new(3);
 
 const canvas = document.getElementById("crucial-experiment-canvas");
 canvas.width = (CELL_SIZE + 1) * width + 1;
