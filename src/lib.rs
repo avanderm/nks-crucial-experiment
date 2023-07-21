@@ -48,6 +48,10 @@ impl Universe {
         self.cells.as_slice().as_ptr()
     }
 
+    pub fn count_active(&self) -> u32 {
+        self.cells.count_ones(..) as u32
+    }
+
     pub fn tick(&mut self, pattern: &Pattern) {
         let width = (2 * self.span + 1) as usize;
         let mut carry_over = self.cells[width-1];

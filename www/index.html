@@ -19,12 +19,25 @@
       div {
         display: inline-block;
       }
+
+      canvas{
+        border:1px solid grey;
+        margin: 10px;
+      }
+      .row{
+        display: flex;
+      }
     </style>
   </head>
   <body>
-    <button id="play-pause"></button>
-    <button id="reset">Reset</button>
-    <canvas id="crucial-experiment-canvas"></canvas>
+    <div class="row">
+      <button id="play-pause"></button>
+      <button id="reset">Reset</button>
+    </div>
+    <div class="row">
+      <canvas id="crucial-experiment-canvas"></canvas>
+      <canvas id="count-canvas"></canvas>
+    </div>
     <div>
       <input type="checkbox" id="config0" name="settings" value="0">
       <label for="config0">◻◻◻</label><br>

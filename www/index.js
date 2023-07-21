@@ -5,6 +5,7 @@ const CELL_SIZE = 2;
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
+const COUNT_COLOR = "#FF0000";
 
 let universe = Universe.new();
 
@@ -18,6 +19,10 @@ const pattern = Pattern.new();
 const canvas = document.getElementById("crucial-experiment-canvas");
 canvas.width = (CELL_SIZE + 1) * width + 1;
 canvas.height = (CELL_SIZE + 1) * iteration_limit;
+
+const countCanvas = document.getElementById("count-canvas");
+countCanvas.width = width;
+countCanvas.height = (CELL_SIZE + 1) * iteration_limit;
 
 const ctx = canvas.getContext("2d");
 let animationId = null;
@@ -52,6 +57,7 @@ resetButton.addEventListener("click", event => {
   pause();
   drawGrid();
   cleanCells();
+  cleanCounts();
 });
 
 const checkboxes = document.querySelectorAll("input[type=checkbox][name=settings]");
@@ -95,21 +101,7 @@ const bitIsSet = (n, arr) => {
 };
 
 const cleanCells = () => {
-  ctx.beginPath();
-  ctx.fillStyle = DEAD_COLOR;
-
-  for (let row = 0; row < width; row++) {
-    for (let col = 0; col < iteration_limit; col++) {
-      ctx.fillRect(
-        row * (CELL_SIZE + 1) + 1,
-        col * (CELL_SIZE + 1) + 1,
-        CELL_SIZE,
-        CELL_SIZE
-      );
-    }
-  }
-
-  ctx.stroke();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
 const drawCells = () => {
@@ -135,9 +127,33 @@ const drawCells = () => {
   ctx.stroke();
 };
 
+const countCtx = countCanvas.getContext("2d");
+
+const drawCount = () => {
+  const count = universe.count_active();
+
+  countCtx.beginPath();
+
+  countCtx.fillStyle = COUNT_COLOR;
+
+  countCtx.fillRect(
+    0,
+    iteration * (CELL_SIZE + 1) + 1,
+    count,
+    CELL_SIZE
+  );
+
+  countCtx.stroke();
+};
+
+const cleanCounts = () => {
+  countCtx.clearRect(0, 0, countCanvas.width, countCanvas.height);
+};
+
 const renderLoop = () => {
   drawGrid();
   drawCells();
+  drawCount();
 
   universe.tick(pattern);
   iteration += 1;
