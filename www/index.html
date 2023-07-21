@@ -23,39 +23,21 @@
       canvas{
         border:1px solid grey;
         margin: 10px;
-      }
-      .row{
-        display: flex;
+        display: inline-block;
+        vertical-align: top;
       }
     </style>
   </head>
   <body>
-    <div class="row">
+    <div>
       <button id="play-pause"></button>
       <button id="reset">Reset</button>
       <button id="randomize">Randomize</button>
     </div>
-    <div class="row">
+    <div>
+      <div><canvas id="settings-canvas"></canvas></div>
       <canvas id="crucial-experiment-canvas"></canvas>
       <canvas id="count-canvas"></canvas>
-    </div>
-    <div>
-      <input type="checkbox" id="config0" name="settings" value="0">
-      <label for="config0">◻◻◻</label><br>
-      <input type="checkbox" id="config1" name="settings" value="1">
-      <label for="config1">◻◻◼</label><br>
-      <input type="checkbox" id="config2" name="settings" value="2">
-      <label for="config2">◻◼◻</label><br>
-      <input type="checkbox" id="config3" name="settings" value="1">
-      <label for="config3">◻◼◼</label><br>
-      <input type="checkbox" id="config4" name="settings" value="4">
-      <label for="config4">◼◻◻</label><br>
-      <input type="checkbox" id="config5" name="settings" value="5">
-      <label for="config5">◼◻◼</label><br>
-      <input type="checkbox" id="config6" name="settings" value="6">
-      <label for="config6">◼◼◻</label><br>
-      <input type="checkbox" id="config7" name="settings" value="7">
-      <label for="config7">◼◼◼</label><br>
     </div>
     <script src="./bootstrap.js"></script>
   </body>

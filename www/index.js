@@ -2,6 +2,7 @@ import { Universe, Pattern } from "crucial-experiment";
 import { memory } from "crucial-experiment/crucial_experiment_bg";
 
 const CELL_SIZE = 2;
+const SELECT_SIZE = 10;
 const GRID_COLOR = "#CCCCCC";
 const DEAD_COLOR = "#FFFFFF";
 const ALIVE_COLOR = "#000000";
@@ -14,7 +15,8 @@ const width = 2 * span + 1;
 const iteration_limit = span;
 let iteration = 0;
 
-const pattern = Pattern.new(3);
+const window = 5;
+const pattern = Pattern.new(window);
 
 const canvas = document.getElementById("crucial-experiment-canvas");
 canvas.width = (CELL_SIZE + 1) * width + 1;
@@ -23,6 +25,32 @@ canvas.height = (CELL_SIZE + 1) * iteration_limit;
 const countCanvas = document.getElementById("count-canvas");
 countCanvas.width = width;
 countCanvas.height = (CELL_SIZE + 1) * iteration_limit;
+
+const settingsCanvas = document.getElementById("settings-canvas");
+settingsCanvas.width = (SELECT_SIZE + 1) * (window + 2) + 1;
+settingsCanvas.height = (SELECT_SIZE + 1) * (2 ** window) + 1;
+
+settingsCanvas.addEventListener("click", event => {
+  const boundingRect = settingsCanvas.getBoundingClientRect();
+
+  const scaleX = settingsCanvas.width / boundingRect.width;
+  const scaleY = settingsCanvas.height / boundingRect.height;
+
+  const settingsCanvasLeft = (event.clientX - boundingRect.left) * scaleX;
+  const settingsCanvasTop = (event.clientY - boundingRect.top) * scaleY;
+
+  const row = Math.min(Math.floor(settingsCanvasTop / (SELECT_SIZE + 1)), (2 ** window) - 1);
+  const col = Math.min(Math.floor(settingsCanvasLeft / (SELECT_SIZE + 1)), (window + 2) - 1);
+
+  console.log("trigger", row, col);
+
+  if (col === window + 1) {
+    let current = pattern.get_outcome(row);
+    pattern.set_outcome(row, !current);
+
+    drawSettings();
+  }
+});
 
 const ctx = canvas.getContext("2d");
 let animationId = null;
@@ -158,6 +186,44 @@ const drawCount = () => {
   countCtx.stroke();
 };
 
+const settingsCtx = settingsCanvas.getContext("2d");
+
+const drawSettings = () => {
+  settingsCtx.beginPath();
+
+  settingsCtx.fillStyle = COUNT_COLOR;
+
+  for (let row = 0; row < (2 ** window); row++) {
+    for (let col = 0; col < window; col++) {
+      let mask = 1 << col;
+
+      settingsCtx.fillStyle = (row & mask) != 0
+        ? ALIVE_COLOR
+        : DEAD_COLOR;
+
+      settingsCtx.fillRect(
+        col * (SELECT_SIZE + 1) + 1,
+        row * (SELECT_SIZE + 1) + 1,
+        SELECT_SIZE,
+        SELECT_SIZE
+      );
+    }
+
+    settingsCtx.fillStyle = pattern.get_outcome(row)
+      ? ALIVE_COLOR
+      : DEAD_COLOR;
+
+    settingsCtx.fillRect(
+      (window + 1) * (SELECT_SIZE + 1) + 1,
+      row * (SELECT_SIZE + 1) + 1,
+      SELECT_SIZE,
+      SELECT_SIZE
+    );
+  }
+
+  settingsCtx.stroke();
+};
+
 const cleanCounts = () => {
   countCtx.clearRect(0, 0, countCanvas.width, countCanvas.height);
 };
@@ -166,6 +232,7 @@ const renderLoop = () => {
   drawGrid();
   drawCells();
   drawCount();
+  drawSettings();
 
   universe.tick(pattern);
   iteration += 1;
